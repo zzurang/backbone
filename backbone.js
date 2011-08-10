@@ -298,7 +298,8 @@
       var success = options.success;
       options.success = function(resp, status, xhr) {
         if (!model.set(model.parse(resp, xhr), options)) return false;
-        if (success) success(model, resp, xhr);
+        model.trigger('after_save', model, resp, xhr);
+        // if (success) success(model, resp, xhr);
       };
       options.error = wrapError(options.error, model, options);
       var method = this.isNew() ? 'create' : 'update';
@@ -399,7 +400,7 @@
         if (options.error) {
           options.error(this, error, options);
         } else {
-          this.trigger('error', this, error, options);
+          this.trigger('error', this, buildError(error), options);
         }
         return false;
       }
@@ -1145,7 +1146,7 @@
       if (onError) {
         onError(model, resp, options);
       } else {
-        model.trigger('error', model, resp, options);
+        model.trigger('error', model, buildError(resp), options);
       }
     };
   };
@@ -1155,4 +1156,35 @@
     return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');
   };
 
+  // Generic error handling support for both server and client 
+  // Wrap an optional error callback with a fallback error event.  
+  Backbone.Error = function(){
+    this.errors = {};
+    this.type = 'none';
+  };
+  
+  Backbone.Error.prototype.insert = function(key, value){
+    if(_.isUndefined(this.errors[key])){
+      this.errors[key] = [];
+    }
+    this.errors[key].push(value);
+  };
+  
+  Backbone.Error.prototype.isEmpty = function(){
+    return _.isEmpty(this.errors);
+  };
+  
+  var buildError = function(error){            
+    var serverError;
+                
+    if(_.isString(error.responseText)){
+      serverError = new Backbone.Error();
+      serverError.type = 'server';
+      _.each($.parseJSON(error.responseText), function(k,v){ serverError.insert(v,k); });      
+      return serverError;
+    };  
+    
+    error.type = 'client'
+    return error;
+  };
 }).call(this);
