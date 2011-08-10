@@ -27,8 +27,8 @@ Customized version
     field :last_name, :type => String
     
     validates_presence_of :email, :on => "create", :message => "must be present"
-    validates_length_of :first_name, :within => 2..20, :on => :create, :message => "first name length must be between 2 to 20"
-    validates_length_of :last_name, :within => 2..20, :on => :create, :message => "last name length must be between 2 to 20"    
+    validates_length_of :first_name, :within => 2..20, :on => :create, :message => "length must be 2..20"
+    validates_length_of :last_name, :within => 2..20, :on => :create, :message => "length must be 2..20"    
   end
   
   
