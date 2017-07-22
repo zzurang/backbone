@@ -1,11 +1,9 @@
-
-
 #### Changes
 
 Model triggering 'after_sync' after Backbone.sync gets 2xx from sync with backend.
 This gives more event driven passion in view code
   
-```javascript  
+```coffeescript  
   class window.EditableUserInfoView extends Backbone.View
       ...
        
