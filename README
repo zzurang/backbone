@@ -1,11 +1,11 @@
-Customized version
 
-== Changes ==
-- Model triggering 'after_sync' after Backbone.sync gets 2xx from sync with backend.
-  This gives more event driven passion in view code
+
+#### Changes
+
+Model triggering 'after_sync' after Backbone.sync gets 2xx from sync with backend.
+This gives more event driven passion in view code
   
-  example)
-  
+```javascript  
   class window.EditableUserInfoView extends Backbone.View
       ...
        
@@ -15,55 +15,4 @@ Customized version
           @model.bind 'error', @show_validation_error
           @model.bind 'after_save', @after_save_callback
       ...
-
-- Generic validation handling for both server-side and client-side
-  example)
-  
-  // Server model
-  class User
-    include Mongoid::Document
-    field :email, :type => String
-    field :first_name, :type => String
-    field :last_name, :type => String
-    
-    validates_presence_of :email, :on => "create", :message => "must be present"
-    validates_length_of :first_name, :within => 2..20, :on => :create, :message => "length must be 2..20"
-    validates_length_of :last_name, :within => 2..20, :on => :create, :message => "length must be 2..20"    
-  end
-  
-  
-  // Client model
-  class window.User extends Backbone.Model
-      ...
-      
-      validate: (attrs) ->    
-          error = new Backbone.Error()
-          error.insert('first_name', 'first name should be present') if attrs.first_name == ''
-          error.insert('last_name', 'first name should be present') if attrs.last_name == ''            
-          error unless error.isEmpty()  
-      ...
-  
-  // Client view
-  // Both server-side and client-side errors get passed to error callback
-  // Error object has type property indicating error location (server or client)   
-  class window.EditableUserInfoView extends Backbone.View
-      ...
-       
-      initialize: (attributes, options) ->            
-          ...
-          @model.bind 'error', @show_validation_error
-          ...
-                      
-      update_user_info: =>   
-          attributes = 
-              first_name : @$('#first_name').val()
-              last_name  : @$('#last_name').val()
-              email      : @$('#email').val()
-          @model.save attributes
-  
-      show_validation_error: (model, error) =>
-          console.log "#{error.type} error"
-          _.each error.errors, (error_contents_array, error_key) ->
-              _.each error_contents_array, (error_content) ->
-                  console.log "#{error_key} => #{error_content}"         
-     
+```
